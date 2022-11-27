@@ -8,6 +8,7 @@
     import url from "$lib/url";
     
     import PostListComp from "$lib/components/PostListComp.svelte";
+	import CreatePost from "./createPost.svelte";
 
     const pk = $page.params.pk;
 
@@ -16,14 +17,20 @@
     let pinnedPosts;
 
     let mounted = false;
+    let showCreateComp = false;
 
     const getCategory = async () => {
         const api = useAxios();
         const response = await api.get(`${url}/forum/category/${pk}/`).catch(errorCatch);
 
-        category = response.data
-        posts = category.posts.filter(e => e.pinned == false)
-        pinnedPosts = category.posts.filter(e => e.pinned == true)
+        category = response.data;
+        posts = category.posts.filter(e => e.pinned == false);
+        pinnedPosts = category.posts.filter(e => e.pinned == true);
+    }
+
+    const toggleCreatePost = () => {
+        showCreateComp = !showCreateComp;
+        getCategory();
     }
 
     onMount(async () => {
@@ -38,7 +45,7 @@
     <div class="mx-auto w-3/4 mt-4">
         <div class="flex flex-row items-center justify-between pb-4">
             <p class="text-sm mb-4">{`Home > Forums > ${category.section_name} > ${category.name}`}</p>
-            <a href={`/post/create/${category.pk}/`}><i class="text-gray-400 hover:text-gray-300 fa-solid fa-plus fa-xl"></i></a>
+            <i on:click={toggleCreatePost} on:keypress class="text-gray-400 hover:text-gray-300 fa-solid fa-plus fa-xl" />
         </div>
         
         <h1 class="rounded-sm bg-gray-300 p-2">Pinned posts</h1>
@@ -52,4 +59,8 @@
         {/each}
 
     </div>
+
+    {#if showCreateComp}
+        <CreatePost category={category.pk} on:message={toggleCreatePost} />
+    {/if}
 {/if}

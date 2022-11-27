@@ -24,7 +24,7 @@
         const api = useAxios();
         const response = await api.get(`${url}/forum/posts/`).catch(errorCatch)
 
-        posts = response.data.slice(0, 5)
+        posts = response.data.slice(0, 4)
 
         console.log(posts)
     }
